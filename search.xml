@@ -4,6 +4,25 @@
   
     
     <entry>
+      <title>redis入门(二)</title>
+      <link href="/2023/06/05/redis%E8%B8%A9%E8%BF%87%E7%9A%84%E5%9D%91/"/>
+      <url>/2023/06/05/redis%E8%B8%A9%E8%BF%87%E7%9A%84%E5%9D%91/</url>
+      
+        <content type="html"><![CDATA[<h2 id="redis设置TTL时间，未设置时间单位（坑）"><a href="#redis设置TTL时间，未设置时间单位（坑）" class="headerlink" title="redis设置TTL时间，未设置时间单位（坑）"></a>redis设置TTL时间，未设置时间单位（坑）</h2><p>如下图所示：这句红线语句不会有问题，并且可以写到redis中，问题就存在于写入redis后与原本我们写入的值发生变化，这样我们后面使用到redis存储的值就会出现与你业务逻辑匹配不上的问题。</p><p><img src="https://images.weserv.nl/?url=https://article.biliimg.com/bfs/article/7e182bfaef66585a6642b1bb1531365497ad63d7.png" alt="img"></p><p>展示问题：例如我这里使用到redis存我们的验证码，但是在登录的时候需要对验证码进行校验，发现redis中验证码与我们的前端传来的验证码怎么都匹配不上如图：</p><p><img src="https://images.weserv.nl/?url=https://article.biliimg.com/bfs/article/4085a0946dd4cffc3a3ff1f62f12c8ad778c017a.png" alt="img"></p><p><img src="https://images.weserv.nl/?url=https://article.biliimg.com/bfs/article/484bc10c5a1beb07277395716d2954957f975ef6.png" alt="img"></p><p>问题就存在于redis，也就是我们设置了过期时间却没设置过期时间单位导致，这两张图很明显前端传来的是581456，但是在redis中变成了\x00\x00581456。</p><h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><p><img src="https://images.weserv.nl/?url=https://article.biliimg.com/bfs/article/cb33e39b2d6ca2a79add661440500c9383386178.png" alt="img"></p><p><img src="https://images.weserv.nl/?url=https://article.biliimg.com/bfs/article/9324f32232cca18eab56c6302d7efdd5a6d52db5.png" alt="img"></p><p>看redis中的值这就对了，对于这个问题的出现原因你想去了解，这得看redis的源码(不推荐小白和初级选手去看源码)。</p><h2 id="redis热门问题"><a href="#redis热门问题" class="headerlink" title="redis热门问题"></a>redis热门问题</h2><p>缓存穿透：出现这个问题的条件，如果有人能知道你的接口请求地址，例如：使用恶意不存在的id通过程序开启大量的线程模拟请求，如果事先没有做方案就会导致所有请求完美避开redis，这也就导致所有请求访问mysql最严重的问题也就会导致mysql服务压力过大宕机。</p><h2 id="解决方法-1"><a href="#解决方法-1" class="headerlink" title="解决方法"></a>解决方法</h2><p>1：使用一个固定的这种key和value，作为查询不到redis和mysql中数据时候，在将这种key和value写入redis并设置TTL失效时间，时间最好不用很长2-5分钟即可，缺点产生的多余信息导致redis和mysql数据不一致，但这个不一致时间是咱们控制的，所以能接受则可使用。还会出现一种可能咱们这种key万一在mysql中新增出现，那么他就是个有效的可以在mysql中查询到，而我们直接就在redis拦截返回指定的value了，首先这种几率很小我们可以人为把他降低到0.001%。</p><p>展示代码实现：</p><p><img src="https://images.weserv.nl/?url=https://article.biliimg.com/bfs/article/fd5f7fe7c138426d12ca462d1919382cc6594248.png" alt="img"></p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> -中间件 -redis踩过的坑 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>超详细安装Linux</title>
       <link href="/2023/06/02/%E5%AE%89%E8%A3%85Linux/"/>
       <url>/2023/06/02/%E5%AE%89%E8%A3%85Linux/</url>
