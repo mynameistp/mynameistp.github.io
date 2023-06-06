@@ -4,6 +4,25 @@
   
     
     <entry>
+      <title>java项目jar打包注意事项</title>
+      <link href="/2023/06/06/java%E9%A1%B9%E7%9B%AEjar%E6%89%93%E5%8C%85%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/"/>
+      <url>/2023/06/06/java%E9%A1%B9%E7%9B%AEjar%E6%89%93%E5%8C%85%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/</url>
+      
+        <content type="html"><![CDATA[<h2 id="出现问题的原因"><a href="#出现问题的原因" class="headerlink" title="出现问题的原因"></a>出现问题的原因</h2><p>有没有小伙伴和我一样，平时很少将我们项目打成jar包，导致只是会一个大概流程很多细节都没关注，今天我就来讲讲我所遇到的坑。</p><h2 id="1：首先我们使用的是maven打成jar"><a href="#1：首先我们使用的是maven打成jar" class="headerlink" title="1：首先我们使用的是maven打成jar"></a>1：首先我们使用的是maven打成jar</h2><p>如下图我已经打成好了jar包</p><p><img src="https://images.weserv.nl/?url=https://article.biliimg.com/bfs/article/c57384c05d7b9a31799508e07ba45d5d2d3cf89b.png" alt="img"></p><p>完成以上步骤后，进入我们的window命令窗口，这里有些小伙伴没有Open in选项，可以直接找到target文件目录在如下图所示，在按Enter键弹出cmd命令窗口。</p><p><img src="https://images.weserv.nl/?url=https://article.biliimg.com/bfs/article/5eca95d346b9e1ed3b2a1f1ab446efc978dbb8b1.png" alt="img"></p><p>在我们的window命令行输入，如下指令java -jar XXX架包名称,出现如下问题解决方案：</p><p>问题：Exception in thread “main” java.lang.ClassNotFoundException: com.example或者就是找不到或无法加载主类，可以使用如下方式解决。</p><p><img src="https://images.weserv.nl/?url=https://article.biliimg.com/bfs/article/62bac68f6542fb205fc10a2029c944ed68a87a16.png" alt="img"></p><p>接下来我给大家一个干净的maven-plugin插件配置</p><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;build&gt;</span><br><span class="line">    &lt;plugins&gt;</span><br><span class="line">        &lt;plugin&gt;</span><br><span class="line">            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;&gt;</span><br><span class="line">            &lt;configuration&gt;       </span><br><span class="line">              &lt;mainClass&gt;                                    com.example.springclouduserservice.SpringCloudUserServiceApplication</span><br><span class="line">              &lt;/mainClass&gt;</span><br><span class="line">            &lt;/configuration&gt;</span><br><span class="line">        &lt;/plugin&gt;</span><br><span class="line">    &lt;/plugins&gt;</span><br><span class="line">&lt;/build&gt;</span><br></pre></td></tr></table></figure><p>注意  <mainClass>  标签里面的内容是，你的springBoot引导类类地址。</p><p>选中引导类右键鼠标，选择Copy Path</p><p><img src="https://images.weserv.nl/?url=https://article.biliimg.com/bfs/article/f45657e4e96aad6d509a5b80fa1ade4c11387200.png" alt="img"></p><p><img src="https://images.weserv.nl/?url=https://article.biliimg.com/bfs/article/9c0d25c5afe1d8244c425ce055194bf47a0e6943.png" alt="img"></p><p>将地址复制到pom文件插件部分找到我们的mainClass标签中</p><p><img src="https://images.weserv.nl/?url=https://article.biliimg.com/bfs/article/60fced068f4cb8592dea67a155be7492fc8e74fb.png" alt="img"></p><p>接下来因为我们已经打包过一次本地有缓存需要先clean在package,如果还不放心缓存或者有缓存影响，可以先clean在compile,在clean最后在package。</p><p><img src="https://images.weserv.nl/?url=https://article.biliimg.com/bfs/article/ef6d0a34998347a483984aae0e38528d59267d07.png" alt="img"></p><p>如果遇到这样错误，不要慌：Failed to execute goal org.apache.maven.plugins:maven-clean-plugin:3.1.0:clean (default-clean) on project spring-cloud-order-service: Failed to clean project: Failed to delete </p><p>这是因为我们的cmd命令窗口占用导致我们clean失败，解决方式很简单关闭你的cmd命令窗口，在idea里的话</p><p><img src="https://images.weserv.nl/?url=https://article.biliimg.com/bfs/article/fc8c4de1820ee2fec9ee37365e19f9565b56d70f.png" alt="img"></p><p>现在我们clean完成，继续package，接下来就和第一步开始一样找到我们的target文件下面，在命令行下打开输入java -jar 架包名。</p><p><img src="https://images.weserv.nl/?url=https://article.biliimg.com/bfs/article/437887eb5ee26e054314dfaabf20f240e8ac6cb3.png" alt="img"></p><p><img src="https://images.weserv.nl/?url=https://article.biliimg.com/bfs/article/945f9bf6e9e28e0e070c81583f1c10fb77905af3.png" alt="img"></p><p>现在看是不是没有问题啦  注意我就是被chatGPT坑了下，他给我的pom配置插件如下图，请使用我上面给的pom的maven打包插件配置。</p><p><img src="https://images.weserv.nl/?url=https://article.biliimg.com/bfs/article/355a491f32eab03101bc2dc08be84b5a5da96436.png" alt="img"></p><p>我们的jar在我们的window环境下可以运行后才能把他放到我的Linux环境运行，中间可能也会出现许许多多问题例如我们的java环境不一致，但是不要放弃，问题是怪物解决他你才能收获经验不断升级。</p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> -java -SpringBoot </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>redis入门(二)</title>
       <link href="/2023/06/05/redis%E8%B8%A9%E8%BF%87%E7%9A%84%E5%9D%91/"/>
       <url>/2023/06/05/redis%E8%B8%A9%E8%BF%87%E7%9A%84%E5%9D%91/</url>
